@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/clue_interactable.gd" id="1_clue"]
+
+[sub_resource type="StandardMaterial3D" id="paper_mat"]
+albedo_color = Color(0.95, 0.93, 0.90, 1.0)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="paper_mesh"]
+size = Vector3(0.4, 0.01, 0.3)
+
+[sub_resource type="BoxShape3D" id="paper_trigger"]
+size = Vector3(1.2, 1.0, 1.2)
+
+[node name="ClueDocument" type="Area3D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_clue")
+prompt_name = "Read Document"
+interaction_type = "clue"
+evidence_id = "directive_12"
+inspect_title = "Foundation Directive 12"
+inspect_body = "A secure memo signed by Director Leon. Instructs guards to execute immediate compromise protocols for unauthorized Solarium access. Maya captures a photo."
+
+[node name="PaperMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("paper_mesh")
+surface_material_override/0 = SubResource("paper_mat")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("paper_trigger")

@@ -1,0 +1,69 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/surveillance_camera.gd" id="1_cam"]
+
+[sub_resource type="StandardMaterial3D" id="cam_mat"]
+albedo_color = Color(0.18, 0.18, 0.20, 1.0)
+roughness = 0.30
+metallic = 0.85
+
+[sub_resource type="BoxMesh" id="housing_mesh"]
+size = Vector3(0.28, 0.20, 0.32)
+
+[sub_resource type="CylinderMesh" id="lens_mesh"]
+top_radius = 0.055
+bottom_radius = 0.09
+height = 0.22
+
+[sub_resource type="StandardMaterial3D" id="lens_mat"]
+albedo_color = Color(0.04, 0.04, 0.06, 1.0)
+roughness = 0.05
+metallic = 0.95
+
+[sub_resource type="StandardMaterial3D" id="cone_mat"]
+transparency = 1
+albedo_color = Color(0.85, 0.82, 0.78, 0.06)
+emission_enabled = true
+emission = Color(0.85, 0.82, 0.78, 1.0)
+emission_energy_multiplier = 0.3
+
+[sub_resource type="CylinderMesh" id="cone_mesh"]
+top_radius = 0.03
+bottom_radius = 3.8
+height = 9.5
+
+[sub_resource type="SphereShape3D" id="occlusion_ray_shape"]
+radius = 0.1
+
+[node name="SurveillanceCamera" type="Node3D"]
+script = ExtResource("1_cam")
+
+[node name="Housing" type="MeshInstance3D" parent="."]
+mesh = SubResource("housing_mesh")
+surface_material_override/0 = SubResource("cam_mat")
+
+[node name="CameraBody" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, -0.10, -0.05)
+
+[node name="Lens" type="MeshInstance3D" parent="CameraBody"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.14)
+mesh = SubResource("lens_mesh")
+surface_material_override/0 = SubResource("lens_mat")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="CameraBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.14)
+light_color = Color(0.85, 0.82, 0.78, 1.0)
+light_energy = 2.5
+spot_range = 12.0
+spot_angle = 45.0
+
+[node name="OcclusionRay" type="RayCast3D" parent="CameraBody"]
+target_position = Vector3(0, 0, -12.0)
+collision_mask = 1
+collide_with_areas = false
+collide_with_bodies = true
+
+[node name="VisionCone" type="MeshInstance3D" parent="CameraBody"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 4.75)
+mesh = SubResource("cone_mesh")
+surface_material_override/0 = SubResource("cone_mat")

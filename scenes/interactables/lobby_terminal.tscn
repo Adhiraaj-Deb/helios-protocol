@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/clue_interactable.gd" id="1_clue"]
+
+[sub_resource type="StandardMaterial3D" id="pedestal_mat"]
+albedo_color = Color(0.38, 0.36, 0.34, 1.0)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="screen_mat"]
+albedo_color = Color(0.08, 0.06, 0.04, 1.0)
+emission_enabled = true
+emission = Color(0.76, 0.49, 0.21, 1.0)
+emission_energy_multiplier = 4.0
+roughness = 0.2
+
+[sub_resource type="BoxMesh" id="stand_mesh"]
+size = Vector3(0.6, 1.0, 0.6)
+
+[sub_resource type="BoxMesh" id="monitor_mesh"]
+size = Vector3(0.5, 0.4, 0.08)
+
+[sub_resource type="BoxShape3D" id="term_trigger"]
+size = Vector3(1.5, 1.5, 1.5)
+
+[node name="LobbyTerminal" type="Area3D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_clue")
+prompt_name = "Access Terminal"
+interaction_type = "terminal"
+evidence_id = "solarium_terminal_hack"
+inspect_title = "Security Terminal"
+inspect_body = "Maya intercepts local access logs and extracts the passcode for the Solarium security gate."
+
+[node name="Pedestal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("stand_mesh")
+surface_material_override/0 = SubResource("pedestal_mat")
+
+[node name="Monitor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 1.15, -0.1)
+mesh = SubResource("monitor_mesh")
+surface_material_override/0 = SubResource("screen_mat")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("term_trigger")

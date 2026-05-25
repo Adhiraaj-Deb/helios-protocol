@@ -1,0 +1,229 @@
+[gd_scene load_steps=22 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactables/npc_interactable.gd" id="1_npc"]
+
+; ==================================================
+; PHYSICS & TRIGGERS
+; ==================================================
+[sub_resource type="CylinderShape3D" id="npc_trigger"]
+radius = 1.6
+height = 2.0
+
+; ==================================================
+; MESHES
+; ==================================================
+[sub_resource type="CapsuleMesh" id="mesh_pelvis"]
+radius = 0.145
+height = 0.16
+
+[sub_resource type="CapsuleMesh" id="mesh_torso_low"]
+radius = 0.130
+height = 0.14
+
+[sub_resource type="CapsuleMesh" id="mesh_torso_up"]
+radius = 0.148
+height = 0.20
+
+[sub_resource type="BoxMesh" id="mesh_shoulder_bar"]
+size = Vector3(0.48, 0.09, 0.22)
+
+[sub_resource type="CapsuleMesh" id="mesh_neck"]
+radius = 0.050
+height = 0.06
+
+[sub_resource type="CapsuleMesh" id="mesh_upper_arm"]
+radius = 0.046
+height = 0.26
+
+[sub_resource type="CapsuleMesh" id="mesh_forearm"]
+radius = 0.036
+height = 0.24
+
+[sub_resource type="BoxMesh" id="mesh_hand"]
+size = Vector3(0.065, 0.050, 0.085)
+
+[sub_resource type="CapsuleMesh" id="mesh_thigh"]
+radius = 0.065
+height = 0.24
+
+[sub_resource type="CapsuleMesh" id="mesh_shin"]
+radius = 0.048
+height = 0.24
+
+[sub_resource type="BoxMesh" id="mesh_foot"]
+size = Vector3(0.080, 0.042, 0.155)
+
+[sub_resource type="SphereMesh" id="mesh_head"]
+radius = 0.112
+height = 0.224
+
+[sub_resource type="CapsuleMesh" id="mesh_hair"]
+radius = 0.118
+height = 0.04
+
+[sub_resource type="BoxMesh" id="detail_mesh"]
+size = Vector3(0.44, 0.06, 0.22)
+
+; ==================================================
+; MATERIALS
+; ==================================================
+[sub_resource type="StandardMaterial3D" id="mat_dara_body"]
+albedo_color = Color(0.84, 0.76, 0.62, 1.0)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="mat_dara_skin"]
+albedo_color = Color(0.48, 0.34, 0.24, 1.0)
+roughness = 0.80
+
+[sub_resource type="StandardMaterial3D" id="mat_hair"]
+albedo_color = Color(0.11, 0.08, 0.06, 1.0)
+roughness = 0.90
+
+[sub_resource type="StandardMaterial3D" id="mat_shoes"]
+albedo_color = Color(0.11, 0.10, 0.09, 1.0)
+roughness = 0.72
+
+[sub_resource type="StandardMaterial3D" id="mat_outline_ring"]
+albedo_color = Color(0.76, 0.59, 0.31, 1.0)
+roughness = 0.55
+
+[node name="NPCDara" type="Area3D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_npc")
+prompt_name = "Talk to Dara"
+interaction_type = "npc"
+npc_id = "Dara"
+
+[node name="PlaceholderBody" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.825, 0)
+
+[node name="Pelvis" type="MeshInstance3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.09, 0)
+mesh = SubResource("mesh_pelvis")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="LowerTorso" type="MeshInstance3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("mesh_torso_low")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="UpperTorso" type="MeshInstance3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0)
+mesh = SubResource("mesh_torso_up")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="ShoulderBar" type="MeshInstance3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+mesh = SubResource("mesh_shoulder_bar")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="Neck" type="MeshInstance3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48, 0)
+mesh = SubResource("mesh_neck")
+surface_material_override/0 = SubResource("mat_dara_skin")
+
+[node name="LeftArmPivot" type="Node3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.230, 0.40, 0)
+
+[node name="LeftUpperArm" type="MeshInstance3D" parent="PlaceholderBody/LeftArmPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, 0)
+mesh = SubResource("mesh_upper_arm")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="LeftElbowPivot" type="Node3D" parent="PlaceholderBody/LeftArmPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 0)
+
+[node name="LeftForearm" type="MeshInstance3D" parent="PlaceholderBody/LeftArmPivot/LeftElbowPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.155, 0)
+mesh = SubResource("mesh_forearm")
+surface_material_override/0 = SubResource("mat_dara_skin")
+
+[node name="LeftHand" type="MeshInstance3D" parent="PlaceholderBody/LeftArmPivot/LeftElbowPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.31, 0.02)
+mesh = SubResource("mesh_hand")
+surface_material_override/0 = SubResource("mat_dara_skin")
+
+[node name="RightArmPivot" type="Node3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.230, 0.40, 0)
+
+[node name="RightUpperArm" type="MeshInstance3D" parent="PlaceholderBody/RightArmPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, 0)
+mesh = SubResource("mesh_upper_arm")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="RightElbowPivot" type="Node3D" parent="PlaceholderBody/RightArmPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 0)
+
+[node name="RightForearm" type="MeshInstance3D" parent="PlaceholderBody/RightArmPivot/RightElbowPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.155, 0)
+mesh = SubResource("mesh_forearm")
+surface_material_override/0 = SubResource("mat_dara_skin")
+
+[node name="RightHand" type="MeshInstance3D" parent="PlaceholderBody/RightArmPivot/RightElbowPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.31, 0.02)
+mesh = SubResource("mesh_hand")
+surface_material_override/0 = SubResource("mat_dara_skin")
+
+[node name="LeftLegPivot" type="Node3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.085, -0.14, 0)
+
+[node name="LeftThigh" type="MeshInstance3D" parent="PlaceholderBody/LeftLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, 0)
+mesh = SubResource("mesh_thigh")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="LeftKneePivot" type="Node3D" parent="PlaceholderBody/LeftLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 0)
+
+[node name="LeftShin" type="MeshInstance3D" parent="PlaceholderBody/LeftLegPivot/LeftKneePivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.155, 0)
+mesh = SubResource("mesh_shin")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="LeftFoot" type="MeshInstance3D" parent="PlaceholderBody/LeftLegPivot/LeftKneePivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.33, 0.03)
+mesh = SubResource("mesh_foot")
+surface_material_override/0 = SubResource("mat_shoes")
+
+[node name="RightLegPivot" type="Node3D" parent="PlaceholderBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.085, -0.14, 0)
+
+[node name="RightThigh" type="MeshInstance3D" parent="PlaceholderBody/RightLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, 0)
+mesh = SubResource("mesh_thigh")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="RightKneePivot" type="Node3D" parent="PlaceholderBody/RightLegPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 0)
+
+[node name="RightShin" type="MeshInstance3D" parent="PlaceholderBody/RightLegPivot/RightKneePivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.155, 0)
+mesh = SubResource("mesh_shin")
+surface_material_override/0 = SubResource("mat_dara_body")
+
+[node name="RightFoot" type="MeshInstance3D" parent="PlaceholderBody/RightLegPivot/RightKneePivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.33, 0.03)
+mesh = SubResource("mesh_foot")
+surface_material_override/0 = SubResource("mat_shoes")
+
+[node name="PlaceholderHead" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+
+[node name="HeadMesh" type="MeshInstance3D" parent="PlaceholderHead"]
+mesh = SubResource("mesh_head")
+surface_material_override/0 = SubResource("mat_dara_skin")
+
+[node name="HairMass" type="MeshInstance3D" parent="PlaceholderHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.082, -0.012)
+mesh = SubResource("mesh_hair")
+surface_material_override/0 = SubResource("mat_hair")
+
+[node name="InteractRing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("detail_mesh")
+surface_material_override/0 = SubResource("mat_outline_ring")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("npc_trigger")

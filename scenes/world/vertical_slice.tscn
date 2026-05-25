@@ -1,0 +1,541 @@
+[gd_scene load_steps=19 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/maya.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/npc_dara.tscn" id="2_dara"]
+[ext_resource type="PackedScene" path="res://scenes/world/surveillance_camera.tscn" id="3_cam"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/clue_document.tscn" id="4_doc"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/lobby_terminal.tscn" id="5_term"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/security_door.tscn" id="6_door"]
+[ext_resource type="Script" path="res://scripts/systems/env_controller.gd" id="7_env"]
+
+; ==================================================
+; MATERIAL LIBRARY
+; A: Brutalist Concrete — warm sun-bleached grey, principal wall surface
+; B: Warm Limestone — creamy pale stone, lobby and terrace floors
+; C: Dark Teak Wood — deep brown warmth, bench and accent panels
+; D: Graphite Metal — dark brushed metal, beams and surveillance hardware
+; E: Tinted Glass — subtle warm tint, architectural glass partition
+; F: Emissive Amber — restrained warm glow for technology accents
+; G: Water Surface — deep teal for the pool
+; H: Concrete Dark — slightly darker for security corridor
+; ==================================================
+
+[sub_resource type="StandardMaterial3D" id="mat_concrete"]
+albedo_color = Color(0.76, 0.73, 0.68, 1.0)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="mat_limestone"]
+albedo_color = Color(0.91, 0.87, 0.80, 1.0)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="mat_wood"]
+albedo_color = Color(0.38, 0.24, 0.12, 1.0)
+roughness = 0.62
+
+[sub_resource type="StandardMaterial3D" id="mat_graphite"]
+albedo_color = Color(0.19, 0.19, 0.21, 1.0)
+roughness = 0.32
+metallic = 0.70
+
+[sub_resource type="StandardMaterial3D" id="mat_glass"]
+albedo_color = Color(0.56, 0.64, 0.66, 0.22)
+roughness = 0.05
+metallic = 0.10
+transparency = 1
+
+[sub_resource type="StandardMaterial3D" id="mat_emissive"]
+albedo_color = Color(0.04, 0.03, 0.02, 1.0)
+emission_enabled = true
+emission = Color(0.96, 0.64, 0.22, 1.0)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="StandardMaterial3D" id="mat_water"]
+albedo_color = Color(0.24, 0.40, 0.52, 1.0)
+roughness = 0.04
+metallic = 0.12
+
+[sub_resource type="StandardMaterial3D" id="mat_concrete_dark"]
+albedo_color = Color(0.44, 0.42, 0.40, 1.0)
+roughness = 0.90
+
+[sub_resource type="StandardMaterial3D" id="mat_stone_trim"]
+albedo_color = Color(0.62, 0.59, 0.54, 1.0)
+roughness = 0.70
+
+; ==================================================
+; WORLD ENVIRONMENT — Cinematic Day Setup
+; Filmic tonemap, warm coastal sky, controlled fog for depth
+; ==================================================
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
+sky_top_color = Color(0.30, 0.46, 0.72, 1.0)
+sky_horizon_color = Color(0.97, 0.83, 0.60, 1.0)
+sky_curve = 0.07
+ground_bottom_color = Color(0.14, 0.11, 0.09, 1.0)
+ground_horizon_color = Color(0.62, 0.52, 0.40, 1.0)
+ground_curve = 0.02
+sun_angle_max = 100.0
+sun_curve = 0.05
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_mat")
+
+[sub_resource type="Environment" id="env"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 2
+ambient_light_color = Color(0.88, 0.78, 0.65, 1.0)
+ambient_light_energy = 0.55
+tonemap_mode = 2
+tonemap_exposure = 0.95
+tonemap_white = 1.0
+glow_enabled = true
+glow_intensity = 0.25
+glow_bloom = 0.15
+glow_hdr_threshold = 0.80
+fog_enabled = true
+fog_light_color = Color(0.72, 0.62, 0.50, 1.0)
+fog_density = 0.005
+fog_sky_affect = 0.4
+
+; ==================================================
+; SCENE ROOT
+; ==================================================
+
+[node name="VerticalSlice" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+; ==================================================
+; LIGHTING
+; Primary: warm coastal directional sun, angled for dramatic shadow shapes
+; Secondary: soft lobby fill light (OmniLight, no shadow, cheap)
+; Night: controlled practical warm pools, cool surveillance menace
+; ==================================================
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.40558, 0.29619, 0, 0.58779, 0.80902, -0.5, -0.70063, 0.51304, 0, 14.0, 0)
+light_color = Color(0.99, 0.88, 0.65, 1.0)
+light_energy = 1.55
+shadow_enabled = true
+directional_shadow_mode = 2
+directional_shadow_blend_splits = true
+
+[node name="LobbyFill" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, -5.5)
+light_color = Color(0.98, 0.93, 0.84, 1.0)
+light_energy = 0.75
+omni_range = 11.0
+shadow_enabled = false
+
+[node name="TerraceFill" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 5.5)
+light_color = Color(0.96, 0.90, 0.78, 1.0)
+light_energy = 0.40
+omni_range = 10.0
+shadow_enabled = false
+
+[node name="EnvController" type="Node" parent="."]
+script = ExtResource("7_env")
+sun_path = NodePath("../Sun")
+world_env_path = NodePath("../WorldEnvironment")
+night_accent_lights_parent_path = NodePath("../NightAccents")
+
+[node name="NightAccents" type="Node3D" parent="."]
+visible = false
+
+[node name="NightLobby_1" type="OmniLight3D" parent="NightAccents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.0, 2.8, -4.0)
+light_color = Color(0.95, 0.52, 0.18, 1.0)
+light_energy = 3.5
+omni_range = 5.5
+
+[node name="NightLobby_2" type="OmniLight3D" parent="NightAccents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 2.8, -7.0)
+light_color = Color(0.92, 0.48, 0.14, 1.0)
+light_energy = 3.0
+omni_range = 5.0
+
+[node name="NightCorridor_Spot" type="SpotLight3D" parent="NightAccents"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 3.0, -14.5)
+light_color = Color(0.40, 0.46, 0.65, 1.0)
+light_energy = 2.0
+spot_range = 8.0
+spot_angle = 40.0
+shadow_enabled = true
+
+[node name="NightTerminal_Glow" type="OmniLight3D" parent="NightAccents"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -10.0)
+light_color = Color(0.96, 0.64, 0.22, 1.0)
+light_energy = 2.0
+omni_range = 3.5
+
+; ==================================================
+; PLAYER & INTERACTABLES
+; All positions preserved from working state.
+; Security door moved to the corridor entrance (z=-11.5) from old x=10 (outside corridor).
+; Surveillance camera moved inside corridor walls.
+; ==================================================
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 6.0)
+
+[node name="NPCDara" parent="." instance=ExtResource("2_dara")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5.5, 0.5, -3.0)
+
+[node name="SurveillanceCamera" parent="." instance=ExtResource("3_cam")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2, 3.0, -14.5)
+
+[node name="ClueDocument" parent="." instance=ExtResource("4_doc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6, 0.86, -3.5)
+
+[node name="LobbyTerminal" parent="." instance=ExtResource("5_term")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.5, -9.5)
+
+[node name="SecurityDoor" parent="." instance=ExtResource("6_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.5, -11.6)
+
+; ==================================================
+; LEVEL GEOMETRY
+; Organised into three clear zones:
+; Zone A: Arrival Terrace — open, sunlit, pool, sea-facing
+; Zone B: Solarium Lobby — curated, architectural, semi-interior
+; Zone C: Security Corridor — controlled, narrow, tense
+; ==================================================
+
+[node name="LevelGeo" type="Node3D" parent="."]
+
+; --- ZONE A: ARRIVAL TERRACE ---
+[node name="Terrace" type="Node3D" parent="LevelGeo"]
+
+[node name="TerraceFloor" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.28, 5.5)
+size = Vector3(28, 0.56, 9)
+use_collision = true
+material = SubResource("mat_limestone")
+
+[node name="PoolRecess" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.0, -0.62, 5.5)
+size = Vector3(6.0, 0.5, 5.2)
+use_collision = false
+material = SubResource("mat_concrete_dark")
+
+[node name="PoolSurface" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.0, -0.37, 5.5)
+size = Vector3(5.8, 0.06, 5.0)
+use_collision = false
+material = SubResource("mat_water")
+
+[node name="PoolRim_N" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.0, -0.22, 8.2)
+size = Vector3(6.0, 0.12, 0.32)
+use_collision = true
+material = SubResource("mat_stone_trim")
+
+[node name="PoolRim_S" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.0, -0.22, 2.8)
+size = Vector3(6.0, 0.12, 0.32)
+use_collision = true
+material = SubResource("mat_stone_trim")
+
+[node name="PoolRim_E" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.2, -0.22, 5.5)
+size = Vector3(0.32, 0.12, 5.6)
+use_collision = true
+material = SubResource("mat_stone_trim")
+
+[node name="SeaParapet_Main" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.50, 10.2)
+size = Vector3(28, 1.0, 0.45)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="SeaColumn_L" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1.8, 10.2)
+size = Vector3(0.65, 3.6, 0.65)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="SeaColumn_R" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 1.8, 10.2)
+size = Vector3(0.65, 3.6, 0.65)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="ConcretePlanter" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0, 0.55, 4.5)
+size = Vector3(2.8, 1.1, 5.0)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="PlanterCap" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0, 1.15, 4.5)
+size = Vector3(2.9, 0.12, 5.1)
+use_collision = true
+material = SubResource("mat_stone_trim")
+
+[node name="TerracePillar_L" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 2.5, 1.5)
+size = Vector3(0.60, 5.0, 0.60)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="TerracePillar_R" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 2.5, 1.5)
+size = Vector3(0.60, 5.0, 0.60)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="TerraceBench" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.38, 6.5)
+size = Vector3(2.4, 0.50, 0.75)
+use_collision = true
+material = SubResource("mat_wood")
+
+[node name="TerraceBenchBase" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.14, 6.5)
+size = Vector3(2.2, 0.28, 0.40)
+use_collision = true
+material = SubResource("mat_graphite")
+
+; Threshold strip where terrace meets lobby (material break line)
+[node name="TerraceThreshold" type="CSGBox3D" parent="Terrace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 1.4)
+size = Vector3(22, 0.06, 0.55)
+use_collision = false
+material = SubResource("mat_stone_trim")
+
+; --- ZONE B: SOLARIUM LOBBY ---
+[node name="Lobby" type="Node3D" parent="LevelGeo"]
+
+[node name="LobbyFloor" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.28, -5.5)
+size = Vector3(24, 0.56, 11)
+use_collision = true
+material = SubResource("mat_limestone")
+
+[node name="LobbyLeftWall" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.7, 2.5, -5.5)
+size = Vector3(0.55, 5.0, 10.5)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="LobbyRightWall" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 2.5, -5.5)
+size = Vector3(0.55, 5.0, 10.5)
+use_collision = true
+material = SubResource("mat_concrete")
+
+; Wood accent panels on interior of left wall
+[node name="WoodPanel_L1" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.4, 1.6, -3.5)
+size = Vector3(0.14, 3.2, 3.8)
+use_collision = false
+material = SubResource("mat_wood")
+
+[node name="WoodPanel_L2" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.4, 1.6, -8.0)
+size = Vector3(0.14, 3.2, 2.8)
+use_collision = false
+material = SubResource("mat_wood")
+
+; Back wall with framed opening for security corridor
+[node name="BackWall_L" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.5, -10.8)
+size = Vector3(9.5, 5.0, 0.55)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="BackWall_R" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 2.5, -10.8)
+size = Vector3(9.5, 5.0, 0.55)
+use_collision = true
+material = SubResource("mat_concrete")
+
+; Lintel (header beam above corridor opening)
+[node name="BackWall_Lintel" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.9, -10.8)
+size = Vector3(4.5, 1.2, 0.55)
+use_collision = true
+material = SubResource("mat_graphite")
+
+; Structural pillar rhythm — pairs at 2 depths
+[node name="Pillar_L1" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.5, -2.5)
+size = Vector3(0.60, 5.0, 0.60)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="Pillar_R1" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 2.5, -2.5)
+size = Vector3(0.60, 5.0, 0.60)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="Pillar_L2" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.5, -8.0)
+size = Vector3(0.60, 5.0, 0.60)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="Pillar_R2" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 2.5, -8.0)
+size = Vector3(0.60, 5.0, 0.60)
+use_collision = true
+material = SubResource("mat_concrete")
+
+; Overhead structural beams (graphite metal — horizontal) 
+[node name="Beam_1" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.55, -2.5)
+size = Vector3(24, 0.38, 0.50)
+use_collision = false
+material = SubResource("mat_graphite")
+
+[node name="Beam_2" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.55, -8.0)
+size = Vector3(24, 0.38, 0.50)
+use_collision = false
+material = SubResource("mat_graphite")
+
+; Reception/partition block (focal centre of lobby)
+[node name="ReceptionBlock" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.80, -5.5)
+size = Vector3(3.2, 1.60, 1.80)
+use_collision = true
+material = SubResource("mat_limestone")
+
+[node name="ReceptionTop" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 1.64, -5.5)
+size = Vector3(3.3, 0.10, 1.90)
+use_collision = true
+material = SubResource("mat_stone_trim")
+
+; Glass partition above reception block
+[node name="GlassPartition" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 2.45, -5.5)
+size = Vector3(3.0, 1.40, 0.08)
+use_collision = false
+material = SubResource("mat_glass")
+
+; Lobby seating bench (wood)
+[node name="LobbyBench" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.44, -4.0)
+size = Vector3(3.0, 0.48, 0.85)
+use_collision = true
+material = SubResource("mat_wood")
+
+[node name="LobbyBenchBase" type="CSGBox3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.16, -4.0)
+size = Vector3(2.7, 0.32, 0.45)
+use_collision = true
+material = SubResource("mat_graphite")
+
+; --- ZONE C: SECURITY CORRIDOR ---
+[node name="SecurityCorridor" type="Node3D" parent="LevelGeo"]
+
+[node name="CorridorFloor" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.28, -14.5)
+size = Vector3(12, 0.56, 7.5)
+use_collision = true
+material = SubResource("mat_concrete_dark")
+
+[node name="CorridorCeiling" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.35, -14.5)
+size = Vector3(12, 0.40, 7.5)
+use_collision = false
+material = SubResource("mat_graphite")
+
+[node name="CorridorLeftWall" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0, 1.7, -14.5)
+size = Vector3(0.50, 3.4, 7.5)
+use_collision = true
+material = SubResource("mat_concrete_dark")
+
+[node name="CorridorRightWall" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 1.7, -14.5)
+size = Vector3(0.50, 3.4, 7.5)
+use_collision = true
+material = SubResource("mat_concrete_dark")
+
+[node name="CorridorEndWall" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -18.4)
+size = Vector3(12, 3.4, 0.50)
+use_collision = true
+material = SubResource("mat_graphite")
+
+; Emissive ceiling strip lights (amber — restrained)
+[node name="EmissiveStrip_L" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 3.05, -14.5)
+size = Vector3(0.10, 0.10, 6.5)
+use_collision = false
+material = SubResource("mat_emissive")
+
+[node name="EmissiveStrip_R" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 3.05, -14.5)
+size = Vector3(0.10, 0.10, 6.5)
+use_collision = false
+material = SubResource("mat_emissive")
+
+; Metal skirting trim at base of corridor walls
+[node name="MetalTrim_L" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.72, 0.22, -14.5)
+size = Vector3(0.08, 0.44, 7.5)
+use_collision = false
+material = SubResource("mat_graphite")
+
+[node name="MetalTrim_R" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.72, 0.22, -14.5)
+size = Vector3(0.08, 0.44, 7.5)
+use_collision = false
+material = SubResource("mat_graphite")
+
+; Door frame around security door entrance
+[node name="DoorFrame_Top" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, -11.2)
+size = Vector3(2.6, 0.45, 0.50)
+use_collision = false
+material = SubResource("mat_graphite")
+
+[node name="DoorFrame_L" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 1.5, -11.2)
+size = Vector3(0.22, 3.0, 0.50)
+use_collision = false
+material = SubResource("mat_graphite")
+
+[node name="DoorFrame_R" type="CSGBox3D" parent="SecurityCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 1.5, -11.2)
+size = Vector3(0.22, 3.0, 0.50)
+use_collision = false
+material = SubResource("mat_graphite")
+
+; --- OUTER PERIMETER WALLS (contain all zones) ---
+[node name="Perimeter" type="Node3D" parent="LevelGeo"]
+
+[node name="OuterWall_Left" type="CSGBox3D" parent="Perimeter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.0, 2.5, -4.5)
+size = Vector3(0.60, 5.0, 30)
+use_collision = true
+material = SubResource("mat_concrete")
+
+[node name="OuterWall_Right" type="CSGBox3D" parent="Perimeter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.0, 2.5, -4.5)
+size = Vector3(0.60, 5.0, 30)
+use_collision = true
+material = SubResource("mat_concrete")
+
+; --- FLOOR SEAM PATCHES ---
+; These fill the Z-axis gaps left between the three CSGBox floor slabs.
+; Gap 1: Z=0.0 to Z=1.0 — between TerraceFloor (ends z=1.0) and LobbyFloor (starts z=0.0)
+[node name="SeamPatch_TerraceLobby" type="CSGBox3D" parent="LevelGeo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.28, 0.5)
+size = Vector3(24, 0.56, 1.0)
+use_collision = true
+material = SubResource("mat_limestone")
+
+; Gap 2: Z=-11.0 to Z=-10.75 — between LobbyFloor (ends z=-11.0) and CorridorFloor (starts z=-10.75)
+[node name="SeamPatch_LobbyCorridor" type="CSGBox3D" parent="LevelGeo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.28, -10.875)
+size = Vector3(12, 0.56, 0.26)
+use_collision = true
+material = SubResource("mat_concrete_dark")
