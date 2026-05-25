@@ -53,7 +53,7 @@ script = ExtResource("4_loader")
 [node name="IslandGLB" parent="IslandTerrain" instance=ExtResource("1_island")]
 
 [node name="ExistingHouseScene" parent="." instance=ExtResource("2_house")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 6.0)
