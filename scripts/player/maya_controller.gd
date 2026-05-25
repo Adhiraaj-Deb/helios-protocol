@@ -169,14 +169,15 @@ func _process_interactions():
 	if interaction_ray.is_colliding():
 		var collider = interaction_ray.get_collider()
 		
-		# Verify that collider is an interactable Area3D
-		if collider and collider.has_method("interact"):
+		# Verify that collider is an interactable Area3D or in the "interactable" group
+		if collider and (collider.is_in_group("interactable") or collider.has_method("interact")):
 			if current_interactable != collider:
 				current_interactable = collider
 				
 				# Show HUD prompt
-				var prompt = "Press E to %s" % collider.prompt_name
-				if collider.is_locked:
+				var prompt_str = collider.prompt_name if "prompt_name" in collider else "Interact"
+				var prompt = "Press E to %s" % prompt_str
+				if "is_locked" in collider and collider.is_locked:
 					prompt += " [SECURE]"
 				UIManager.show_interaction_prompt(prompt)
 		else:
@@ -186,8 +187,25 @@ func _process_interactions():
 
 	# Action triggers
 	if current_interactable:
-		if Input.is_action_just_pressed("interact"):
-			current_interactable.interact(self)
+		if Input.is_action_just_pressed("interact") or Input.is_action_just_pressed("ui_accept"):
+			# Call a function on that object
+			if current_interactable.has_method("interact"):
+				current_interactable.interact(self)
+			
+			# If in "interactable" group, append its ID to GlobalGameState.evidence_collected
+			if current_interactable.is_in_group("interactable"):
+				var object_id = ""
+				if "evidence_id" in current_interactable:
+					object_id = current_interactable.evidence_id
+				elif "id" in current_interactable:
+					object_id = current_interactable.id
+				else:
+					object_id = current_interactable.name
+				
+				if object_id != "" and not GlobalGameState.evidence_collected.has(object_id):
+					GlobalGameState.evidence_collected.append(object_id)
+					print("[GlobalGameState] Appended evidence: %s" % object_id)
+					
 		elif Input.is_action_just_pressed("inspect"):
 			if current_interactable.has_method("inspect"):
 				current_interactable.inspect(self)

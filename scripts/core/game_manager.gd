@@ -62,9 +62,9 @@ func start_vertical_slice():
 	current_state = State.GAMEPLAY
 	UIManager.force_close_all()
 	# Load the gameplay scene
-	var err = get_tree().change_scene_to_file("res://scenes/world/vertical_slice.tscn")
+	var err = get_tree().change_scene_to_file("res://scenes/main/solaris_isle.tscn")
 	if err != OK:
-		push_error("[GameManager] Failed to load vertical slice scene. Error: %d" % err)
+		push_error("[GameManager] Failed to load solaris_isle scene. Error: %d" % err)
 	else:
 		print("[GameManager] Main gameplay environment loaded successfully.")
 		# Defer mouse capture alignment

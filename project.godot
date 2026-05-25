@@ -22,6 +22,7 @@ UIManager="*res://scripts/core/ui_manager.gd"
 EvidenceManager="*res://scripts/core/evidence_manager.gd"
 DialogueManager="*res://scripts/core/dialogue_manager.gd"
 AudioManager="*res://scripts/core/audio_manager.gd"
+GlobalGameState="*res://scripts/autoloads/GlobalGameState.gd"
 
 [physics]
 
