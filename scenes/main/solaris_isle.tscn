@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://assets/models/island/Island.glb" id="1_island"]
 [ext_resource type="PackedScene" path="res://scenes/world/vertical_slice.tscn" id="2_house"]
 [ext_resource type="PackedScene" path="res://scenes/player/maya.tscn" id="3_player"]
+[ext_resource type="Script" path="res://scripts/world/island_loader.gd" id="4_loader"]
 
 [sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
 sky_top_color = Color(0.30, 0.46, 0.72, 1.0)
@@ -30,12 +31,10 @@ glow_enabled = true
 glow_intensity = 0.25
 glow_bloom = 0.15
 glow_hdr_threshold = 0.80
-fog_enabled = true
+fog_enabled = false
 fog_light_color = Color(0.72, 0.62, 0.50, 1.0)
-fog_density = 0.005
+fog_density = 0.001
 
-[sub_resource type="BoxShape3D" id="box_floor_shape"]
-size = Vector3(2000, 2, 2000)
 
 [node name="SolarisIsle" type="Node3D"]
 
@@ -48,14 +47,11 @@ light_color = Color(0.99, 0.88, 0.65, 1.0)
 light_energy = 2.0
 shadow_enabled = true
 
-[node name="IslandTerrain" type="StaticBody3D" parent="."]
+[node name="IslandTerrain" type="Node3D" parent="."]
+script = ExtResource("4_loader")
 
-[node name="MeshInstance3D" parent="IslandTerrain" instance=ExtResource("1_island")]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="IslandTerrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-shape = SubResource("box_floor_shape")
+[node name="IslandGLB" parent="IslandTerrain" instance=ExtResource("1_island")]
+transform = Transform3D(0.002, 0, 0, 0, 0.002, 0, 0, 0, 0.002, -88, 0, -3.8)
 
 [node name="ExistingHouseScene" parent="." instance=ExtResource("2_house")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
